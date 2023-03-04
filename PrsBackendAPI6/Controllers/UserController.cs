@@ -2,13 +2,16 @@
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
 using Repository.DTOs;
+using Services;
+using System;
+using System.Diagnostics;
 using System.Linq.Dynamic.Core.Parser;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 
 namespace PrsBackendAPI6.Controllers;
 
-[Route("api/[controller]")]
+[Route("/api/User")]
 [ApiController]
 public class UserController : ControllerBase
 {
@@ -19,20 +22,19 @@ public class UserController : ControllerBase
         _repository = repository;
     }
 
-    // Get by any condition
+
+    [Route("/search-users")]
     [HttpGet]
-    public IActionResult GetByCondition(Uri uri)
+    public ActionResult<List<User>> GetByCondition(string url)
     {
+        var service = new UserConditionService(_repository);
 
-        /*
-         * 
-         *  use URI class to get the expression from the URL and oass it to getByCondition
-         * 
-         */
-        
-        
-     //   return users = _repository.User.FindByCondition(expression).ToList();
+        var users = service.FindByConditions(url);
 
+        Debug.WriteLine("Returned into controller: " + users.Count + " num users");
+
+        return users;
+        
     }
     // Get All
     [HttpGet]
@@ -42,35 +44,6 @@ public class UserController : ControllerBase
         {
             Users = _repository.User.FindAll().ToList()
         });
-    }
-
-    [HttpPost]
-    public IActionResult Create([FromBody] UserCreateDTO userDTO)
-    {
-        if (userDTO == null)
-        {
-            return BadRequest("User data is null");
-        }
-
-
-        var user = new User
-        {
-            Id = userDTO.Id,
-            Username = userDTO.Username,
-            Password = userDTO.Password,
-            Firstname = userDTO.Firstname,
-            Lastname = userDTO.Lastname,
-            Phone = userDTO.Phone,
-            Email = userDTO.Email,
-            IsReviewer = userDTO.IsReviewer,
-            IsAdmin = userDTO.IsAdmin
-        };
-
-        _repository.User.Create(user);
-        _repository.Save();
-
-        return CreatedAtAction(nameof(GetByCondition), new { id = user.Id }, user);
-        
     }
 
 

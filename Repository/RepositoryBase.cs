@@ -1,5 +1,6 @@
 ﻿using Contracts;
 using Entities;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -18,7 +19,9 @@ public abstract class RepositoryBase<T> : IRepositoryBase<T> where T : class
     public IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression) =>
         RepositoryContext.Set<T>().Where(expression).AsNoTracking();
 
-    public void Create(T entity) => RepositoryContext.Set<T>().Add(entity);
+    public void Create(T entity) =>
+        RepositoryContext.Set<T>().Add(entity);
+    
 
     public void Update(T entity) => RepositoryContext.Set<T>().Update(entity);
 

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Entities;
 using PrsBackendAPI6.Extensions;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 internal class Program
 {
@@ -12,7 +13,12 @@ internal class Program
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
-
+        
+        /*
+        builder.Services
+            .AddGraphQLServer()
+            .AddQueryType<Query>();
+        */
 
         var configuration = builder.Configuration;
         var connectionString = configuration.GetConnectionString("PrsContext");
@@ -24,7 +30,7 @@ internal class Program
 
         var app = builder.Build();
 
-
+        // app.MapGraphQL();
 
 
         if (app.Environment.IsDevelopment())

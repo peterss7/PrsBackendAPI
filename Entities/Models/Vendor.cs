@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Entities.Models;
 
+[Table("Vendor")]
 public class Vendor {
 
 
