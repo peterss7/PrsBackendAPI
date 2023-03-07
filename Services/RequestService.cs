@@ -1,6 +1,6 @@
 ﻿using Contracts;
 using Entities.Models;
-using Microsoft.AspNetCore.Identity;
+
 using Microsoft.AspNetCore.Mvc;
 using Repository.DTOs;
 using System.Linq.Expressions;
@@ -10,14 +10,11 @@ namespace Services;
 
 public class RequestService
 {
-
     private IRepositoryWrapper _repository;
-
     public RequestService(IRepositoryWrapper repository)
     {
         _repository = repository;
     }
-
     public ActionResult<List<RequestDTO>?> FindByConditions(RequestDTO requestDto)
     {
         List<Expression<Func<Request, bool>>> expressions = new List<Expression<Func<Request, bool>>>();
@@ -67,7 +64,7 @@ public class RequestService
 
         if (foundRequests.Count > 0)
         {
-            return new OkObjectResult(GetDtosFromRequests(foundRequests));
+            return new OkObjectResult(RequestDTOService.GetDtosFromRequests(foundRequests));
         }
         else
         {
@@ -76,14 +73,13 @@ public class RequestService
 
 
     }
-
     public ActionResult<List<RequestDTO>> FindAll()
     {
         List<Request> requests = _repository.Request.FindAll().ToList();
 
         if (requests != null)
         {
-            List<RequestDTO> allRequests = GetDtosFromRequests(requests);
+            List<RequestDTO> allRequests = RequestDTOService.GetDtosFromRequests(requests);
             return new OkObjectResult(allRequests);
         }
         else
@@ -91,7 +87,6 @@ public class RequestService
             return new BadRequestObjectResult("No requests were found");
         }
     }
-
     public ActionResult<RequestDTO> Create(RequestDTO requestDto)
     {
         string description, justification, deliveryMode,
@@ -196,11 +191,10 @@ public class RequestService
             }
         }
 
-        RequestDTO createdRequestDTO = GetDtoFromRequest(_repository.Request.FindByCondition(r => r.Id == highestId).ToList()[0]);
+        RequestDTO createdRequestDTO = RequestDTOService.GetDtoFromRequest(_repository.Request.FindByCondition(r => r.Id == highestId).ToList()[0]);
 
         return new OkObjectResult(createdRequestDTO);
     }
-
     public ActionResult<RequestDTO> Delete(int id)
     {
 
@@ -210,15 +204,13 @@ public class RequestService
         {
             _repository.Request.Delete(deleteRequest);
             _repository.Save();
-            return new OkObjectResult(GetDtoFromRequest(deleteRequest));
+            return new OkObjectResult(RequestDTOService.GetDtoFromRequest(deleteRequest));
         }
         else
         {
             return new BadRequestObjectResult("Cannot delete Request. No user by that Id was found.");
         }
     }
-
-
     public ActionResult<RequestDTO> Update(RequestDTO requestDto)
     {
 
@@ -277,41 +269,11 @@ public class RequestService
             _repository.Request.Update(request);
             _repository.Save();
 
-            RequestDTO returnedRequest = GetDtoFromRequest(_repository.Request.FindByCondition(v => v.Id == int.Parse(requestDto.Id)).FirstOrDefault());
+            RequestDTO returnedRequest = RequestDTOService.GetDtoFromRequest(_repository.Request.FindByCondition(v => v.Id == int.Parse(requestDto.Id)).FirstOrDefault());
             return new OkObjectResult(returnedRequest);
         }
 
-    }
-
-    public RequestDTO GetDtoFromRequest(Request request)
-    {
-        RequestDTO returnedDto = new RequestDTO
-        {
-            Id = request.Id.ToString(),
-            Description = request.Description,
-            Justification = request.Justification,
-            RejectionReason = request.RejectionReason.ToString(),
-            DeliveryMode = request.DeliveryMode,
-            SubmittedDate = request.SubmittedDate,
-            DateNeeded = request.DateNeeded.ToString(),
-        };
-
-        return returnedDto;
-    }
-
-    public List<RequestDTO> GetDtosFromRequests(List<Request> requests)
-    {
-
-        List<RequestDTO> requestsDto = new List<RequestDTO>();
-
-        foreach (Request request in requests)
-        {
-            requestsDto.Add(GetDtoFromRequest(request));
-        }
-
-        return requestsDto;
-    }
-
+    }  
     public ActionResult<List<PricedRequestLine>> GetCost(int id)
     {
         
@@ -368,6 +330,145 @@ public class RequestService
         return pricedRequestLines;
 
 
+    }
+    public ActionResult<RequestDTO> ChangeStatus(RequestChangeObject requestChangeObject)
+    {
+
+        if (requestChangeObject.NewStatus.Equals("PENDING"))
+        {
+            return new BadRequestObjectResult("You cannot change a request to its initial status.");
+        }
+
+        Request? targetRequest = _repository.Request.FindByCondition(r => r.Id == int.Parse(requestChangeObject.RequestId)).FirstOrDefault();
+
+        if (targetRequest == null)
+        {
+            return new NotFoundObjectResult("No request by that Id was found.");
+        }
+
+        if (targetRequest.Status.Equals("COMPLETED"))
+        {
+            return new BadRequestObjectResult("This request has already been completed.");
+        }
+
+        AuthenticationObject requestChangerAuth = new AuthenticationObject();
+
+        if (requestChangeObject == null || requestChangeObject.Username == null
+            || requestChangeObject.Password == null)
+        {
+            return new BadRequestObjectResult("You entered one or more null values for your login.");
+        }
+        else
+        {
+            requestChangerAuth.Username = requestChangeObject.Username;
+            requestChangerAuth.Password = requestChangeObject.Password;
+
+            UserDTO authenticatedUser = AuthenticationService.Authenticate(requestChangerAuth, _repository).Value;
+
+            if (authenticatedUser == null)
+            {
+                return new NotFoundObjectResult("Your login credentials were not accepted.");
+            }
+            else
+            {
+                // user is not reviewer or admin and can only cancel
+                if (!bool.Parse(authenticatedUser.IsReviewer) && !(bool.Parse(authenticatedUser.IsAdmin)))
+                {
+                    if (requestChangeObject.NewStatus != "CANCELLED")
+                    {
+                        return new BadRequestObjectResult("You are not authorized to complete this action.");
+                    }
+                    else if (targetRequest.UserId != int.Parse(authenticatedUser.Id))
+                    {
+                        return new BadRequestObjectResult("You are only authorized to cancel your own requests.");
+                    }
+                    else if (targetRequest.Status.Equals("CANCELLED") || targetRequest.Status.Equals("REJECTED")
+                        || targetRequest.Status.Equals("APPROVED"))
+                    {
+                        return new BadRequestObjectResult("You cannot alter the status of this request.");
+                    }                    
+                    else 
+                    {
+                        targetRequest.Status = requestChangeObject.NewStatus;
+                        _repository.Request.Update(targetRequest);
+                        _repository.Save();
+                        return new OkObjectResult("Your request has been cancelled.");
+                    }
+                }
+                // user is a reviewer, and can change request status from "PENDING" to "ON HOLD" or "IN PROGRESS"
+                // I imagine ON HOLD means reviewer flags it for an admin, expecting it to be rejected.
+                // I imagine IN PROGRESS means the reviewer finds the request valid and submits to admins for approval
+                else if (bool.Parse(authenticatedUser.IsReviewer) && !bool.Parse(authenticatedUser.IsAdmin))
+                {
+                    if (targetRequest.UserId == int.Parse(authenticatedUser.Id) && requestChangeObject.NewStatus.Equals("CANCELLED")
+                        && targetRequest.Status.Equals("PENDING"))
+                    {
+                        targetRequest.Status = requestChangeObject.NewStatus;
+                        _repository.Request.Update(targetRequest);
+                        _repository.Save();
+                        return new OkObjectResult(targetRequest);
+                    }
+                    else if (!targetRequest.Status.Equals("PENDING"))
+                    {
+                        return new BadRequestObjectResult("You cannot alter this request.");
+                    }
+                    else if (requestChangeObject.NewStatus.Equals("APPROVED") || requestChangeObject.Equals("REJECTED")
+                        || requestChangeObject.NewStatus.Equals("COMPLETED"))
+                    {
+                        return new BadRequestObjectResult("You are not authorized to approve or reject requests, or mark them completed.");
+                    }
+                    else if (requestChangeObject.NewStatus.Equals("ON HOLD") || requestChangeObject.NewStatus.Equals("IN PROGRESS")
+                        && targetRequest.Status.Equals("PENDING") && !(targetRequest.UserId == int.Parse(authenticatedUser.Id)))
+                    {
+                        targetRequest.Status = requestChangeObject.NewStatus;
+                        _repository.Request.Update(targetRequest);
+                        _repository.Save();
+                        return new OkObjectResult(targetRequest);
+                    }
+                    else
+                    {
+                        return new BadRequestObjectResult("Unkown issue with your status change request.");
+                    }
+
+                }
+                // user is admin and can change any thing except but not to pending, and not completed.
+                // cannot alter own requests.
+                else if (bool.Parse(authenticatedUser.IsAdmin))
+                {
+                    if (targetRequest.Status.Equals("COMPLETED"))
+                    {
+                        return new BadRequestObjectResult("This request has already been completed.");
+                    }
+                    if (requestChangeObject.NewStatus.Equals("PENDING"))
+                    {
+                        return new BadRequestObjectResult("Cannot change a request to pending.");
+                    }
+                    if (int.Parse(authenticatedUser.Id) == targetRequest.UserId)
+                    {
+                        return new BadRequestObjectResult("You cannot change your own request, Mr. Admin.");
+                    }
+                    // status of REJECTED and APPROVED can only be changed to completed.
+                    // I imagine COMPLETED means the request has reached the end of the cycle
+                    // and will be deleted from the system, or at least ignored forever after.
+                    if ((targetRequest.Status.Equals("APPROVED") || targetRequest.Status.Equals("REJECTED"))
+                        && !requestChangeObject.NewStatus.Equals("COMPLETED"))
+                    {
+                        return new BadRequestObjectResult("Can only mark approved or rejected requests as comnpleted.");
+                    }
+                    // admin can approve or reject pending requests.
+                    // admin can approve or reject on hold and in progress requests.
+                    // admin can mark approved and rejected requests as complete.
+                    // admin is powerful.
+                    targetRequest.Status = requestChangeObject.NewStatus;
+                    _repository.Request.Update(targetRequest);
+                    _repository.Save();
+                    return new OkObjectResult(targetRequest);
+                }
+            }
+
+        }
+
+        
     }
 
 }

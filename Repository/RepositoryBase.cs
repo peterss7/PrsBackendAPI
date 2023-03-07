@@ -2,6 +2,7 @@
 using Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Repository.DTOs;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -40,48 +41,53 @@ public abstract class RepositoryBase<T> : IRepositoryBase<T> where T : class
     {
         var newEntity = RepositoryContext.Set<T>().Add(entity).Entity;        
         return newEntity;
-    }
-    
+    }   
 
     public void Update(T entity) => RepositoryContext.Set<T>().Update(entity);
 
     public void Delete(T entity) => RepositoryContext.Set<T>().Remove(entity);
 
+
+    //public abstract int GenerateId<T1>() where T1 : class;
+    
+
+    /*
     public int GenerateId<T>() where T : class
     {
-        int nextAvailableId = 1;
+    int nextAvailableId = 1;
 
-        // Check if the type T has an Id property or field
-        PropertyInfo? idProperty = typeof(T).GetProperty("Id");
+    // Check if the type T has an Id property or field
+    PropertyInfo? idProperty = typeof(T).GetProperty("Id");
 
-        FieldInfo? idField = typeof(T).GetField("Id");
+    FieldInfo? idField = typeof(T).GetField("Id");
 
-        var entities = RepositoryContext.Set<T>().AsNoTracking().ToList();
+    var entities = RepositoryContext.Set<T>().AsNoTracking().ToList();
 
-        foreach (T entity in entities)
-        {
-            // Get the value of the Id property or field, if it exists
-            int entityId = 0;
-            if (idProperty != null)
-            {
-                entityId = (int)idProperty.GetValue(entity);
-            }
-            else if (idField != null)
-            {
-                entityId = (int)idField.GetValue(entity);
-            }
-
-            // Check if the entity's Id is greater than the next available Id
-            if (entityId >= nextAvailableId)
-            {
-                nextAvailableId = entityId + 1;
-            }
-        }
-
-        return nextAvailableId;
-
+    foreach (T entity in entities)
+    {
+    // Get the value of the Id property or field, if it exists
+    int entityId = 0;
+    if (idProperty != null)
+    {
+    entityId = (int)idProperty.GetValue(entity);
+    }
+    else if (idField != null)
+    {
+    entityId = (int)idField.GetValue(entity);
     }
 
+    // Check if the entity's Id is greater than the next available Id
+    if (entityId >= nextAvailableId)
+    {
+    nextAvailableId = entityId + 1;
+    }
+    }
+
+    return nextAvailableId;
+
+    }
+    */
+    
     private class ReplaceExpressionVisitor : ExpressionVisitor
     {
 
@@ -100,4 +106,5 @@ public abstract class RepositoryBase<T> : IRepositoryBase<T> where T : class
         }
 
     }
+    
 }

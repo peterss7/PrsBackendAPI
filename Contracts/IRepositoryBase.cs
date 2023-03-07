@@ -11,6 +11,6 @@ public interface IRepositoryBase<T>
     T Create(T entity);
     void Update(T entity);
     void Delete(T entity);
-    int GenerateId<T>() where T : class;
+    
     
 }

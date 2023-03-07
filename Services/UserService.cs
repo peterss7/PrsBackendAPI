@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Repository.DTOs;
 using System.Diagnostics;
 using System.Linq.Expressions;
-using System.Reflection.Metadata.Ecma335;
+
 
 namespace Services;
 
@@ -99,7 +99,7 @@ public class UserService
         List<User> foundUsers = _repository.User.FindByConditions(expressions).ToList();
         if (foundUsers.Count > 0)
         {
-            return new OkObjectResult(GetDtosFromUsers(foundUsers));
+            return new OkObjectResult(UserDTOService.GetDtosFromUsers(foundUsers));
         }
         else
         {
@@ -111,37 +111,16 @@ public class UserService
     
     public ActionResult<UserDTO> Authenticate (AuthenticationObject authentication)
     {
-        if (authentication == null || string.IsNullOrEmpty(authentication.Username)
-            || string.IsNullOrEmpty(authentication.Password))
-        {
-            return new BadRequestObjectResult("Authentication object contains null values.");
-        }
-        else
-        {            
-            List<Expression<Func<User, bool>>> expressions = new List<Expression<Func<User, bool>>>();
-            expressions.Add(u => u.Username == authentication.Username);
-            expressions.Add(u => u.Password == authentication.Password);
-
-            User? authenticatedUser = _repository.User.FindByConditions(expressions).FirstOrDefault();
-            string testedPassword = authenticatedUser.Password;
-
-            if (authenticatedUser == null || !testedPassword.Equals(authentication.Password))
-            {
-                return new NotFoundObjectResult("Bad user/password combination.");
-            }
-            else{
-                return new OkObjectResult(GetDtoFromUser(authenticatedUser));
-            }
-        }
+        return AuthenticationService.Authenticate(authentication, _repository);
     }
 
     public ActionResult<List<UserDTO>> FindAll()
-    {
+    {        
         List<User> users = _repository.User.FindAll().ToList();
         
         if (users != null)
         {
-            List<UserDTO> allUsers = GetDtosFromUsers(users);
+            List<UserDTO> allUsers = UserDTOService.GetDtosFromUsers(users);
             
             foreach (UserDTO dto in allUsers)
             {
@@ -211,7 +190,7 @@ public class UserService
         }
         else
         {
-            return new BadRequestObjectResult("Iseviewer cannot be null");
+            return new BadRequestObjectResult("Is reviewer cannot be null");
         }
         if (!string.IsNullOrEmpty(userDto.IsAdmin))
         {
@@ -223,7 +202,7 @@ public class UserService
         }
 
         if ((!userDto.IsReviewer.ToUpper().Equals("TRUE") && !userDto.IsReviewer.ToUpper().Equals("FALSE")) 
-            || (userDto.IsAdmin.ToUpper().Equals("TRUE") && !userDto.IsAdmin.ToUpper().Equals("FALSE")))
+            || (!userDto.IsAdmin.ToUpper().Equals("TRUE") && !userDto.IsAdmin.ToUpper().Equals("FALSE")))
         {
             return new BadRequestObjectResult("One or both of the booleans is invalid");
         }
@@ -253,7 +232,7 @@ public class UserService
             }
         }
 
-        UserDTO createdUserDto = GetDtoFromUser(_repository.User.FindByCondition(u => u.Id == highestId).ToList()[0]);
+        UserDTO createdUserDto = UserDTOService.GetDtoFromUser(_repository.User.FindByCondition(u => u.Id == highestId).ToList()[0]);
 
         return new OkObjectResult(createdUserDto);
     }
@@ -267,7 +246,7 @@ public class UserService
         {
             _repository.User.Delete(deleteUser);
             _repository.Save();
-            return new OkObjectResult(GetDtoFromUser(deleteUser));
+            return new OkObjectResult(UserDTOService.GetDtoFromUser(deleteUser));
         }
         else
         {
@@ -277,12 +256,8 @@ public class UserService
 
     
     public ActionResult<UserDTO> Update(UserDTO userDto)
-    {
-
-     
-
-        
-        User? user = new User();
+    {   
+        User user = new User();
         
 
         if (userDto.Id == null)
@@ -333,13 +308,9 @@ public class UserService
 
             _repository.User.Update(user);
 
-        
+            UserDTO returnedUser = UserDTOService.GetDtoFromUser(user);
 
-            UserDTO returnedUser = GetDtoFromUser(user);
-
-
-            _repository.Save();
-            // return new OkObjectResult($"User created. IsReviewer validity is {!invalidIsReviewer} and isAdmin validity is {!invalidIsAdmin}. False values were not updated. {returnedUser}");
+            _repository.Save();            
             return new OkObjectResult(returnedUser);
         }
         
@@ -378,65 +349,7 @@ public class UserService
 
         return tempInts;
     }
-
-    public UserDTO GetDtoFromUser(User user)
-    {
-        Debug.WriteLine(user.Firstname);
-
-        UserDTO returnedDto = new UserDTO
-        {
-            Id = user.Id.ToString(),
-            Username = user.Username,
-            Password = "**********",
-            Firstname = user.Firstname,
-            Lastname = user.Lastname,
-            Phone = user.Phone,
-            Email = user.Email,
-            IsReviewer = user.IsReviewer.ToString(),
-            IsAdmin = user.IsAdmin.ToString()            
-        };
-
-        return returnedDto;
-    }
-
-    public List<UserDTO> GetDtosFromUsers(List<User> users)
-    {
-
-        List<UserDTO> usersDto = new List<UserDTO>();
-
-        int temp = 0;
-        foreach (User user in users)
-        {
-            usersDto.Add(GetDtoFromUser(user));
-            Debug.WriteLine(usersDto[temp].Firstname);
-            temp++;
-        }
-
-        foreach(UserDTO dto in usersDto)
-        {
-            Debug.WriteLine(dto.Firstname);
-        }
-
-        return usersDto;
-    }
-
-
-
-    public User GetUserFromDto(UserDTO userDto)
-    {
-        User newUser = new User
-        {
-            Id = int.Parse(userDto.Id),
-            Username = userDto.Username,
-            Firstname = userDto.Firstname,
-            Lastname = userDto.Lastname,
-            Phone = userDto.Phone,
-            Email = userDto.Email,
-            IsReviewer = bool.Parse(userDto.IsReviewer),
-            IsAdmin = bool.Parse(userDto.IsAdmin)
-        };
-
-        return newUser;
-    }
+    
+ 
 }
 
