@@ -1,15 +1,8 @@
 ﻿using Contracts;
 using Entities.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using PrsUtilities.UserUrl;
 using Repository.DTOs;
-using System.Diagnostics;
 using System.Linq.Expressions;
-using System.Reflection.Metadata.Ecma335;
 
 namespace Services;
 

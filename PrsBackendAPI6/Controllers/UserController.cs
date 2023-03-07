@@ -1,7 +1,5 @@
 ﻿using Contracts;
-using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
-using PrsUtilities.UserUrl;
 using Repository.DTOs;
 using Services;
 
