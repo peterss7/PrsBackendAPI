@@ -1,13 +1,9 @@
 ﻿using Contracts;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
+using PrsUtilities.UserUrl;
 using Repository.DTOs;
 using Services;
-using System;
-using System.Diagnostics;
-using System.Linq.Dynamic.Core.Parser;
-using System.Linq.Expressions;
-using System.Text.RegularExpressions;
 
 namespace PrsBackendAPI6.Controllers;
 
@@ -15,38 +11,41 @@ namespace PrsBackendAPI6.Controllers;
 [ApiController]
 public class UserController : ControllerBase
 {
-    private IRepositoryWrapper _repository;
-
+    private UserService _repository;
     public UserController(IRepositoryWrapper repository)
     {
-        _repository = repository;
+        _repository = new UserService(repository);
     }
 
-
-    [Route("/search-users")]
+    [HttpGet("search-users")]        
+    public ActionResult<List<UserDTO>?> GetByCondition([FromQuery] UserSearchObject userSearchObject)
+    {           
+       return _repository.FindByConditions(userSearchObject);
+    }
+    
     [HttpGet]
-    public ActionResult<List<User>> GetByCondition(string url)
+    public ActionResult<List<UserDTO>>  FindAll()
+    {        
+        return _repository.FindAll();        
+    }   
+   
+
+    [HttpPost("Create")]
+    public ActionResult<UserDTO> Create([FromBody] UserDTO userDto)
     {
-        var service = new UserConditionService(_repository);
-
-        var users = service.FindByConditions(url);
-
-        Debug.WriteLine("Returned into controller: " + users.Count + " num users");
-
-        return users;
-        
-    }
-    // Get All
-    [HttpGet]
-    public IActionResult GetAll()
-    {
-        return Ok(new
-        {
-            Users = _repository.User.FindAll().ToList()
-        });
+        return _repository.Create(userDto);
     }
 
-
- 
-
+    [HttpDelete("Delete")]
+    public ActionResult<UserDTO> Delete([FromBody] int id)
+    {
+        return _repository.Delete(id);
+    }
+    
+    [HttpPut("Update")]
+    public ActionResult<UserDTO> Update([FromBody]UserDTO userDTO)
+    {
+        return _repository.Update(userDTO);
+    }    
 }
+

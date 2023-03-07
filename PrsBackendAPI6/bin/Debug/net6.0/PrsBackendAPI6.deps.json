@@ -14,6 +14,7 @@
           "Microsoft.EntityFrameworkCore.Design": "6.0.14",
           "Microsoft.EntityFrameworkCore.SqlServer": "6.0.14",
           "Microsoft.EntityFrameworkCore.Tools": "6.0.4",
+          "PrsUtilities": "1.0.0",
           "Repository": "1.0.0",
           "Services": "1.0.0",
           "Swashbuckle.AspNetCore": "6.2.3",
@@ -1367,6 +1368,14 @@
           "Entities.dll": {}
         }
       },
+      "PrsUtilities/1.0.0": {
+        "dependencies": {
+          "Repository": "1.0.0"
+        },
+        "runtime": {
+          "PrsUtilities.dll": {}
+        }
+      },
       "Repository/1.0.0": {
         "dependencies": {
           "Contracts": "1.0.0",
@@ -1383,6 +1392,7 @@
         "dependencies": {
           "Contracts": "1.0.0",
           "HotChocolate.AspNetCore": "13.0.5",
+          "PrsUtilities": "1.0.0",
           "Repository": "1.0.0"
         },
         "runtime": {
@@ -2397,6 +2407,11 @@
       "sha512": ""
     },
     "Entities/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "PrsUtilities/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

@@ -1,0 +1,12 @@
+C:\Users\peter\Bootcamp\repos\PrsBackendAPI6\Utilities\bin\Debug\net6.0\Utilities.deps.json
+C:\Users\peter\Bootcamp\repos\PrsBackendAPI6\Utilities\bin\Debug\net6.0\Utilities.dll
+C:\Users\peter\Bootcamp\repos\PrsBackendAPI6\Utilities\bin\Debug\net6.0\Utilities.pdb
+C:\Users\peter\Bootcamp\repos\PrsBackendAPI6\Utilities\obj\Debug\net6.0\Utilities.csproj.AssemblyReference.cache
+C:\Users\peter\Bootcamp\repos\PrsBackendAPI6\Utilities\obj\Debug\net6.0\Utilities.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\peter\Bootcamp\repos\PrsBackendAPI6\Utilities\obj\Debug\net6.0\Utilities.AssemblyInfoInputs.cache
+C:\Users\peter\Bootcamp\repos\PrsBackendAPI6\Utilities\obj\Debug\net6.0\Utilities.AssemblyInfo.cs
+C:\Users\peter\Bootcamp\repos\PrsBackendAPI6\Utilities\obj\Debug\net6.0\Utilities.csproj.CoreCompileInputs.cache
+C:\Users\peter\Bootcamp\repos\PrsBackendAPI6\Utilities\obj\Debug\net6.0\Utilities.dll
+C:\Users\peter\Bootcamp\repos\PrsBackendAPI6\Utilities\obj\Debug\net6.0\refint\Utilities.dll
+C:\Users\peter\Bootcamp\repos\PrsBackendAPI6\Utilities\obj\Debug\net6.0\Utilities.pdb
+C:\Users\peter\Bootcamp\repos\PrsBackendAPI6\Utilities\obj\Debug\net6.0\ref\Utilities.dll

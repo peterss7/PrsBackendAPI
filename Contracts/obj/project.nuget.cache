@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "T+/4rUs6zxE5IwfxBRG3kQN0PK5ZPXP+Zn0P7gdvTtu6Dyuh9dp56jxmbXU7aMh93NKU6KHz/T8jZQsljvoU/w==",
+  "dgSpecHash": "HDV2qx3teB3KBLnu1qx+5Bp07tb9oFr1hzbvdkjtGE1GR7poVMqj5vcpB/3BsgTIrshpG5bhFP+dpVgDiHkcOQ==",
   "success": true,
-  "projectFilePath": "C:\\Users\\peter\\c-sharp\\PrsBackendAPI6\\Contracts\\Contracts.csproj",
+  "projectFilePath": "C:\\Users\\peter\\Bootcamp\\repos\\PrsBackendAPI6\\Contracts\\Contracts.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\peter\\.nuget\\packages\\greendonut\\13.0.5\\greendonut.13.0.5.nupkg.sha512",
     "C:\\Users\\peter\\.nuget\\packages\\hotchocolate\\13.0.5\\hotchocolate.13.0.5.nupkg.sha512",

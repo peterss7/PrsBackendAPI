@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Entities.Models;
 
@@ -13,9 +14,9 @@ public class User
     public int Id { get; set; }
     [Column(Order = 1)]
     [StringLength(30)]
-    public string Username { get; set; }
+    public string Username { get; set; }    
     [Column(Order = 2)]
-    [StringLength(30)]
+    [StringLength(30)]    
     public string Password { get; set; }
     [Column(Order = 3)]
     [StringLength(30)]
@@ -33,6 +34,6 @@ public class User
     public bool IsReviewer { get; set; }
     [Column(Order = 8)]
     public bool IsAdmin { get; set; }
-
+    [JsonIgnore]
     public ICollection<Request>? Requests{ get; set; }
 }

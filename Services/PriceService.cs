@@ -17,7 +17,7 @@ namespace Services
 
         public void RecalculateRequestTotal(RequestLineDTO requestLine)
         {
-            List<RequestLine> relevantRequestLines = _repository.RequestLine.FindByCondition(rid => rid.RequestId == requestLine.Id).ToList();
+            List<RequestLine> relevantRequestLines = _repository.RequestLine.FindByCondition(rid => rid.RequestId == int.Parse(requestLine.Id)).ToList();
 
             decimal newTotal = 0;
 
@@ -32,7 +32,7 @@ namespace Services
                 }
             }
 
-            var targetRequest = _repository.Request.FindByCondition(request => request.Id == requestLine.Id).FirstOrDefault();
+            var targetRequest = _repository.Request.FindByCondition(request => request.Id == int.Parse(requestLine.Id)).FirstOrDefault();
 
             if (targetRequest != null)
             {

@@ -10,6 +10,7 @@
         "dependencies": {
           "Contracts": "1.0.0",
           "HotChocolate.AspNetCore": "13.0.5",
+          "PrsUtilities": "1.0.0",
           "Repository": "1.0.0"
         },
         "runtime": {
@@ -1288,6 +1289,14 @@
           "Entities.dll": {}
         }
       },
+      "PrsUtilities/1.0.0": {
+        "dependencies": {
+          "Repository": "1.0.0"
+        },
+        "runtime": {
+          "PrsUtilities.dll": {}
+        }
+      },
       "Repository/1.0.0": {
         "dependencies": {
           "Contracts": "1.0.0",
@@ -2245,6 +2254,11 @@
       "sha512": ""
     },
     "Entities/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "PrsUtilities/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
