@@ -1,5 +1,5 @@
 ﻿using Entities.Models;
-using Repository.DTOs;
+using Repository.DTOs.ModelDTO;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

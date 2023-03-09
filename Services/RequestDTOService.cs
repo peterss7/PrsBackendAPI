@@ -1,5 +1,5 @@
 ﻿using Entities.Models;
-using Repository.DTOs;
+using Repository.DTOs.ModelDTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,8 +16,7 @@ public static class RequestDTOService
         {
             Id = request.Id.ToString(),
             Description = request.Description,
-            Justification = request.Justification,
-            RejectionReason = request.RejectionReason.ToString(),
+            Justification = request.Justification,            
             DeliveryMode = request.DeliveryMode,
             SubmittedDate = request.SubmittedDate,
             DateNeeded = request.DateNeeded.ToString(),
@@ -25,6 +24,11 @@ public static class RequestDTOService
             Total = request.Total.ToString(),
             UserId = request.UserId.ToString()
         };
+
+        if (request.RejectionReason != null)
+        {
+            returnedDto.RejectionReason = request.RejectionReason.ToString();
+        }
 
         return returnedDto;
     }

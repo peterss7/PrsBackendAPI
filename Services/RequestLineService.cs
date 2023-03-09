@@ -2,7 +2,7 @@
 using Entities.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Repository.DTOs;
+using Repository.DTOs.ModelDTO;
 using System.Linq.Expressions;
 
 

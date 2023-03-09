@@ -1,5 +1,4 @@
-﻿
-namespace Repository.DTOs;
+﻿namespace Repository.DTOs.ModelDTO;
 
 public class RequestDTO
 {
@@ -14,6 +13,6 @@ public class RequestDTO
     public string? Status { get; set; }
     public string? Total { get; set; }
     public string? UserId { get; set; }
-    
+
 
 }

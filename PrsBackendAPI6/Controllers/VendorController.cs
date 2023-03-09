@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Microsoft.AspNetCore.Mvc;
-using Repository.DTOs;
+using Repository.DTOs.ModelDTO;
+using Repository.DTOs.VendorFunctionDTOs;
 using Services;
 
 namespace PrsBackendAPI6.Controllers;
@@ -31,15 +32,15 @@ public class VendorController : ControllerBase
 
 
     [HttpPost("Create")]
-    public ActionResult<VendorDTO> Create([FromBody] VendorDTO vendorDto)
+    public ActionResult<VendorDTO> Create([FromBody] AdminAddVendorObject adminVendorObject)
     {
-        return _repository.Create(vendorDto);
+        return _repository.Create(adminVendorObject);
     }
 
     [HttpDelete("Delete")]
-    public ActionResult<VendorDTO> Delete([FromBody] int id)
+    public ActionResult<VendorDTO> Delete([FromBody] AdminVendorDeleteObject adminVendorObject)
     {
-        return _repository.Delete(id);
+        return _repository.Delete(adminVendorObject);
     }
 
     [HttpPut("Update")]

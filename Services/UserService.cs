@@ -2,6 +2,7 @@
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
 using Repository.DTOs;
+using Repository.DTOs.ModelDTO;
 using System.Diagnostics;
 using System.Linq.Expressions;
 
@@ -111,7 +112,8 @@ public class UserService
     
     public ActionResult<UserDTO> Authenticate (AuthenticationObject authentication)
     {
-        return AuthenticationService.Authenticate(authentication, _repository);
+        //return AuthenticationService.Authenticate(authentication, _repository);
+        return new OkObjectResult("sdfasd");
     }
 
     public ActionResult<List<UserDTO>> FindAll()

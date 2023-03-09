@@ -2,7 +2,7 @@
 
 using System.Text.Json.Serialization;
 
-namespace Repository.DTOs;
+namespace Repository.DTOs.ModelDTO;
 
 public class UserDTO
 {
@@ -11,7 +11,7 @@ public class UserDTO
     public string? Password { get; set; }
     public string? Firstname { get; set; }
     public string? Lastname { get; set; }
-    public string? Phone  { get; set; }
+    public string? Phone { get; set; }
     public string? Email { get; set; }
     public string? IsReviewer { get; set; }
     public string? IsAdmin { get; set; }

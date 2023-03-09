@@ -12,5 +12,6 @@ public class RequestChangeObject
     public string? Password { get; set; }
     public string? RequestId { get; set; }
     public string? NewStatus { get; set; }
+    public string? RejectionReason { get; set; }
 
 }

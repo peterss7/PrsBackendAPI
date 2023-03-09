@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Repository.DTOs;
+using Repository.DTOs.ModelDTO;
 using Services;
 
 namespace PrsBackendAPI6.Controllers;

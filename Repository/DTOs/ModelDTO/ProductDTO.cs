@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
 
-namespace Repository.DTOs;
+namespace Repository.DTOs.ModelDTO;
 
 public class ProductDTO
 {
