@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Entities;
 using PrsBackendAPI6.Extensions;
+using Microsoft.AspNetCore.Mvc;
 
 internal class Program
 {
@@ -12,8 +13,12 @@ internal class Program
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
-        
-        
+        builder.Services.AddScoped<ValidationFilterAttribute>();
+        builder.Services.Configure<ApiBehaviorOptions>(options
+            => options.SuppressModelStateInvalidFilter = true);
+
+
+
 
         var configuration = builder.Configuration;
         var connectionString = configuration.GetConnectionString("PrsContext");

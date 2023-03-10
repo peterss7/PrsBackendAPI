@@ -1,5 +1,6 @@
 ﻿using Contracts;
 using Microsoft.AspNetCore.Mvc;
+using PrsBackendAPI6.Extensions;
 using Repository.DTOs.ModelDTO;
 using Repository.DTOs.VendorFunctionDTOs;
 using Services;
@@ -32,8 +33,9 @@ public class VendorController : ControllerBase
 
 
     [HttpPost("Create")]
+    [ServiceFilter(typeof(ValidationFilterAttribute))]
     public ActionResult<VendorDTO> Create([FromBody] AdminAddVendorObject adminVendorObject)
-    {
+    {   
         return _repository.Create(adminVendorObject);
     }
 

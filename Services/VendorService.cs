@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Repository.DTOs;
 using Repository.DTOs.ModelDTO;
 using Repository.DTOs.VendorFunctionDTOs;
@@ -87,17 +88,12 @@ public class VendorService
         }
     }
 
-    public ActionResult<VendorDTO> Create(AdminAddVendorObject? adminVendor)
+    public ActionResult<VendorDTO> Create(AdminAddVendorObject adminVendor)
     {
-        string  code, name, address, state, zip;
-        string? city = null;
-        string? phone = null;
-        string? email = null;
-     
         AuthenticationObject authObject = new AuthenticationObject
         {
-            Username = adminVendor.User.Username,
-            Password = adminVendor.User.Password
+            Username = adminVendor.Username,
+            Password = adminVendor.Password
         };
 
         bool isUser = AuthenticationService.Authenticate(authObject, _repository);
@@ -115,84 +111,24 @@ public class VendorService
             return new BadRequestObjectResult("You are not authorized to add a vendor.");
         }
 
-        if (!string.IsNullOrEmpty(adminVendor.Vendor.Code))
-        {
-            code = adminVendor.Vendor.Code;
-        }
-        else
-        {
-            return new BadRequestObjectResult("Code cannot be null.");
-        }
-        if (!string.IsNullOrEmpty(adminVendor.Vendor.Name))
-        {
-            name = adminVendor.Vendor.Name;
-        }
-        else
-        {
-            return new BadRequestObjectResult("Name cannot be null.");
-        }
-        if (!string.IsNullOrEmpty(adminVendor.Vendor.Address))
-        {
-            address = adminVendor.Vendor.Address;
-        }
-        else
-        {
-            return new BadRequestObjectResult("Address cannot be null.");
-        }
-        if (!string.IsNullOrEmpty(adminVendor.Vendor.City))
-        {
-            city = adminVendor.Vendor.City;
-        }        
-        if (!string.IsNullOrEmpty(adminVendor.Vendor.State))
-        {
-            state = adminVendor.Vendor.State;
-        }
-        else
-        {
-            return new BadRequestObjectResult("State cannot be null");
-        }
-        if (!string.IsNullOrEmpty(adminVendor.Vendor.Zip))
-        {
-            zip = adminVendor.Vendor.Zip;
-        }
-        else
-        {
-            return new BadRequestObjectResult("Zip cannot be null");
-        }
-        if (!string.IsNullOrEmpty(adminVendor.Vendor.Phone))
-        {
-            phone = adminVendor.Vendor.Phone;
-        }
-        if (!string.IsNullOrEmpty(adminVendor.Vendor.Email))
-        {
-            email = adminVendor.Vendor.Email;
-        }        
-
         var newVendor = new Vendor
         {
-            Code = code,
-            Name = name,
-            Address = address,
-            City = city,
-            State = state,
-            Zip = zip,
-            Phone = phone,
-            Email = email
+            Code = adminVendor.Code,
+            Name = adminVendor.Name,
+            Address = adminVendor.Address,
+            City = adminVendor.City,
+            State = adminVendor.State,
+            Zip = adminVendor.Zip,
+            Phone = adminVendor.Phone,
+            Email = adminVendor.Email
         };
+
+
         _repository.Vendor.Create(newVendor);
         _repository.Save();
+        
 
-        int highestId = 0;
-        List<Vendor> allVendors = _repository.Vendor.FindAll().ToList();
-        foreach (Vendor vendor in allVendors)
-        {
-            if (vendor.Id > highestId)
-            {
-                highestId = vendor.Id;
-            }
-        }
-
-        VendorDTO createdVendorDTO = GetDtoFromVendor(_repository.Vendor.FindByCondition(u => u.Id == highestId).ToList()[0]);
+        VendorDTO createdVendorDTO = GetDtoFromVendor(_repository.Vendor.FindByCondition(u => u.Id == newVendor.Id).ToList()[0]);
 
         return new OkObjectResult(createdVendorDTO);
     }
